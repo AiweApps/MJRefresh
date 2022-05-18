@@ -16,6 +16,7 @@ NSString * const MJRefreshHeaderRefreshingBoundsKey = @"MJRefreshHeaderRefreshin
 
 @interface MJRefreshHeader() <CAAnimationDelegate>
 @property (assign, nonatomic) CGFloat insetTDelta;
+@property (assign, nonatomic) BOOL refreshByUser;
 @end
 
 @implementation MJRefreshHeader
@@ -43,6 +44,8 @@ NSString * const MJRefreshHeaderRefreshingBoundsKey = @"MJRefreshHeaderRefreshin
     
     // 设置高度
     self.mj_h = MJRefreshHeaderHeight;
+    
+    self.refreshByUser = NO;
 }
 
 - (void)placeSubviews
@@ -107,6 +110,7 @@ NSString * const MJRefreshHeaderRefreshingBoundsKey = @"MJRefreshHeaderRefreshin
         }
     } else if (self.state == MJRefreshStatePulling) {// 即将刷新 && 手松开
         // 开始刷新
+        self.refreshByUser = YES;
         [self beginRefreshing];
     } else if (pullingPercent < 1) {
         self.pullingPercent = pullingPercent;
@@ -198,6 +202,13 @@ NSString * const MJRefreshHeaderRefreshingBoundsKey = @"MJRefreshHeaderRefreshin
         // 由于修改了 inset 导致, pullingPercent 被设置值, alpha 已经被提前修改为 0 了. 所以这里不用置 0, 但为了代码的严谨性, 不依赖其他的特殊实现方式, 这里还是置 0.
         self.alpha = 0;
     }
+}
+
+- (void)executeRefreshingCallback {
+    if (self.refreshByUser) {
+        [super executeRefreshingCallback];
+    }
+    self.refreshByUser = NO;
 }
 
 - (void)headerRefreshingAction {
