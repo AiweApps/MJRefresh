@@ -68,7 +68,8 @@ NSString * const MJRefreshHeaderRefreshingBoundsKey = @"MJRefreshHeaderRefreshin
     insetT = insetT > self.mj_h + _scrollViewOriginalInset.top ? self.mj_h + _scrollViewOriginalInset.top : insetT;
     self.insetTDelta = _scrollViewOriginalInset.top - insetT;
     // 避免 CollectionView 在使用根据 Autolayout 和 内容自动伸缩 Cell, 刷新时导致的 Layout 异常渲染问题
-    if (self.scrollView.mj_insetT != insetT) {
+    CGFloat diff = fabs(self.scrollView.mj_insetT - insetT);
+    if (diff > 1) {
         self.scrollView.mj_insetT = insetT;
     }
 }
